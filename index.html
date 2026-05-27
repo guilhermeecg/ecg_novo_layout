@@ -407,26 +407,75 @@
         .proof-number-sub:empty { display: none; }
         .proof-label { font-size:0.875rem; color:var(--text-secondary); font-weight:600; line-height: 1.35; }
 
-        /* PRODUCTS TABS */
-        .products { background: linear-gradient(180deg, var(--bg-gradient-start), var(--bg-gradient-end)); position: relative; }
-        .product-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 30px 0 48px;
+        /* ─── PRODUCTS: dark glass stage ─────────────────────────────── */
+        .products {
+            background: linear-gradient(160deg, #040c20 0%, #071535 55%, #030917 100%);
+            position: relative;
+            overflow: hidden;
         }
+        .products::before {
+            content: '';
+            position: absolute;
+            top: -15%; left: 50%; transform: translateX(-50%);
+            width: 1000px; height: 700px;
+            background: radial-gradient(ellipse at center, rgba(5,55,123,0.32) 0%, rgba(14,165,233,0.07) 45%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+        .products .container { position: relative; z-index: 1; }
+        .products .section-label { background: rgba(14,165,233,0.18); color: #7dd3fc; border: 1px solid rgba(14,165,233,0.25); }
+        .products .section-title { color: #f0f9ff; }
+        .products .section-subtitle { color: rgba(186,210,255,0.62); }
+
+        /* Tabs */
+        .product-tabs { display: flex; justify-content: center; gap: 10px; margin: 30px 0 48px; }
         .product-tab {
             padding: 14px 32px; border-radius: 100px; font-weight: 600; font-size: 1rem;
-            cursor: pointer; border: 2px solid transparent; transition: var(--transition);
-            background: white; color: var(--text-secondary); box-shadow: var(--shadow-sm);
+            cursor: pointer; border: 2px solid rgba(255,255,255,0.12); transition: var(--transition);
+            background: rgba(255,255,255,0.06); color: rgba(200,220,255,0.65);
             user-select: none; white-space: nowrap;
         }
-        .product-tab:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .product-tab.active-glass { border-color: var(--glass-primary); color: var(--glass-primary); background: rgba(5,55,123,0.06); box-shadow: 0 4px 20px rgba(5,55,123,0.15); border-bottom: 3px solid var(--glass-primary); }
-        .product-tab.active-temper { border-color: var(--temper-primary); color: var(--temper-dark); background: rgba(247,148,30,0.1); box-shadow: 0 4px 20px rgba(247,148,30,0.15); border-bottom: 3px solid var(--temper-primary); }
+        .product-tab:hover { transform: translateY(-2px); background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.22); }
+        .product-tab.active-glass { border-color: rgba(14,165,233,0.5); color: #7dd3fc; background: rgba(14,165,233,0.14); box-shadow: 0 4px 24px rgba(14,165,233,0.2); border-bottom-color: #7dd3fc; }
+        .product-tab.active-temper { border-color: rgba(247,148,30,0.5); color: #fbbf24; background: rgba(247,148,30,0.13); box-shadow: 0 4px 24px rgba(247,148,30,0.2); border-bottom-color: #fbbf24; }
 
-        .product-panel { display: none; animation: fadeSlideUp 0.5s ease; }
-        .product-panel.active { display: block; }
+        .product-panel {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 420ms;
+        }
+        .product-panel.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        .product-panels-stage {
+            position: relative;
+            min-height: 320px;
+            height: var(--products-stage-height, auto);
+        }
+        .product-panels-stage::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 220px;
+            height: 340px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 20;
+            border-radius: 28px;
+            background:
+                radial-gradient(ellipse at center, rgba(120,220,255,0.24) 0%, rgba(80,170,255,0.16) 45%, rgba(10,30,80,0) 78%);
+            filter: blur(16px);
+            transition: opacity 260ms ease;
+        }
+        .product-panels-stage.is-morphing::after {
+            opacity: 1;
+        }
         @keyframes fadeSlideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
         @keyframes awards-neon-orbit {
             0% { transform: rotate(0deg) scale(1); }
@@ -455,38 +504,272 @@
             100% { background-position: 0% 50%; }
         }
 
-        .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+        /* ─── Glass Cards ─────────────────────────────────────────────── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 28px;
+            position: relative;
+            padding: 8px 0;
+        }
 
         .feature-card {
-            padding:32px; border-radius:var(--radius-lg); background:var(--glass-surface-strong);
-            backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.5); box-shadow:var(--shadow-sm);
-            transition: var(--transition); position:relative; overflow:hidden; cursor: default;
-        }
-        .feature-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--glass-primary), var(--glass-accent)); opacity:0; transition:var(--transition); }
-        .feature-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-glass); }
-        .feature-card:hover::before { opacity:1; }
-        .feature-card.temper-card::before { background: linear-gradient(90deg, var(--temper-primary), var(--temper-light)); }
-        .feature-card.temper-card:hover { box-shadow: 0 8px 32px rgba(247,148,30,0.15); }
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            will-change: transform;
+            transform-origin: left center;
+            transition: transform 760ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 420ms ease, filter 260ms ease;
 
+            /* Core glass surface */
+            background: linear-gradient(
+                140deg,
+                rgba(255,255,255,0.16) 0%,
+                rgba(200,225,255,0.07) 45%,
+                rgba(255,255,255,0.04) 100%
+            );
+            backdrop-filter: blur(26px) saturate(160%);
+            -webkit-backdrop-filter: blur(26px) saturate(160%);
+
+            /* Asymmetric border — light source top-left */
+            border-top:    1px solid rgba(255,255,255,0.55);
+            border-left:   1px solid rgba(255,255,255,0.28);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            border-right:  1px solid rgba(255,255,255,0.10);
+
+            box-shadow:
+                0 32px 64px rgba(0,0,0,0.5),
+                0 8px 24px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.45),
+                inset 0 -1px 0 rgba(0,0,0,0.12),
+                inset 1px 0 0 rgba(255,255,255,0.18),
+                /* left-edge thickness — lâminas de vidro empilhadas */
+                -4px  0 2px rgba(160,220,200,0.55),
+                -8px  0 2px rgba(160,220,200,0.35),
+                -12px 0 2px rgba(160,220,200,0.20),
+                -16px 0 2px rgba(160,220,200,0.10),
+                -20px 0 2px rgba(160,220,200,0.05);
+
+            transition: box-shadow 0.4s ease;
+        }
+        .product-panel.is-stacked .feature-card {
+            transform:
+                translate3d(var(--stack-x, 0px), var(--stack-y, 0px), var(--stack-zp, 0px))
+                rotateY(-72deg)
+                rotateZ(var(--stack-rz, 0deg));
+            z-index: var(--stack-z, 1);
+            box-shadow:
+                -2px 0 0 rgba(220,250,255,0.85),
+                -4px 0 0 rgba(170,235,255,0.72),
+                -6px 0 0 rgba(120,215,255,0.58),
+                -8px 0 0 rgba(80,185,240,0.45),
+                -10px 0 0 rgba(55,145,210,0.35),
+                -12px 0 0 rgba(35,110,180,0.26),
+                -14px 0 0 rgba(20,80,150,0.19),
+                -17px 0 0 rgba(16,68,130,0.15),
+                -20px 0 0 rgba(12,54,110,0.11),
+                0 18px 32px rgba(8,18,45,0.45);
+            filter: blur(var(--stack-blur, 0px));
+        }
+        .product-panel.is-open .feature-card {
+            transform: translate3d(0, 0, 0) rotateY(0deg) rotateZ(0deg);
+            z-index: 1;
+        }
+        .product-panel.is-stacked .feature-card::after {
+            opacity: 0.95;
+        }
+
+        /* Diagonal refraction stripe */
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -60%; left: -40%;
+            width: 50%; height: 220%;
+            background: linear-gradient(
+                105deg,
+                transparent 30%,
+                rgba(255,255,255,0.05) 44%,
+                rgba(255,255,255,0.13) 50%,
+                rgba(255,255,255,0.05) 56%,
+                transparent 68%
+            );
+            transform: skewX(-8deg);
+            pointer-events: none;
+            transition: left 0.55s ease;
+        }
+        .feature-card:hover::before { left: 110%; }
+
+        /* Top-edge catchlight */
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255,255,255,0.65) 25%,
+                rgba(255,255,255,0.95) 50%,
+                rgba(255,255,255,0.65) 75%,
+                transparent
+            );
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.55),
+                0 12px 32px rgba(0,0,0,0.35),
+                0 0 48px rgba(14,165,233,0.14),
+                inset 0 1px 0 rgba(255,255,255,0.5),
+                inset 0 -1px 0 rgba(0,0,0,0.1),
+                inset 1px 0 0 rgba(255,255,255,0.22);
+        }
+
+        /* Temper — warm amber glass */
+        .feature-card.temper-card {
+            background: linear-gradient(
+                140deg,
+                rgba(255,210,120,0.14) 0%,
+                rgba(247,148,30,0.06) 45%,
+                rgba(255,255,255,0.03) 100%
+            );
+            border-top-color:  rgba(255,215,130,0.58);
+            border-left-color: rgba(255,215,130,0.28);
+            box-shadow:
+                0 32px 64px rgba(0,0,0,0.5),
+                0 8px 24px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,215,130,0.5),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+        }
+        .feature-card.temper-card:hover {
+            box-shadow:
+                0 40px 80px rgba(0,0,0,0.55),
+                0 12px 32px rgba(0,0,0,0.35),
+                0 0 48px rgba(247,148,30,0.18),
+                inset 0 1px 0 rgba(255,215,130,0.55),
+                inset 0 -1px 0 rgba(0,0,0,0.1);
+        }
+
+        /* Typography on dark glass */
+        .feature-card h3 { font-size: 1.125rem; margin-bottom: 10px; color: #f0f9ff; }
+        .feature-card p  { font-size: 0.875rem; color: rgba(186,210,255,0.72); line-height: 1.65; }
+        .feature-card.temper-card h3 { color: #fff7ed; }
+        .feature-card.temper-card p  { color: rgba(255,225,160,0.68); }
+
+        /* Icon container */
         .feature-icon {
-            width:56px; height:56px; border-radius:var(--radius-md);
-            background:linear-gradient(135deg, rgba(5,55,123,0.1), rgba(6,182,212,0.1));
-            display:flex; align-items:center; justify-content:center; margin-bottom:20px; position:relative;
+            width: 56px; height: 56px; border-radius: var(--radius-md);
+            background:
+                linear-gradient(155deg, rgba(255,255,255,0.32) 0%, rgba(206,242,255,0.18) 22%, rgba(104,198,244,0.11) 52%, rgba(35,125,210,0.08) 100%),
+                radial-gradient(140% 90% at 10% 8%, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.12) 28%, rgba(255,255,255,0.02) 60%, rgba(255,255,255,0) 100%);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; position: relative;
+            border-top: 1px solid rgba(246,254,255,0.9);
+            border-left: 1px solid rgba(220,245,255,0.58);
+            border-right: 1px solid rgba(92,178,232,0.24);
+            border-bottom: 1px solid rgba(70,136,198,0.2);
+            box-shadow:
+                0 12px 30px rgba(1,14,38,0.34),
+                0 2px 9px rgba(154,230,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.94),
+                inset 0 -11px 20px rgba(62,148,219,0.12),
+                inset 12px 0 18px rgba(182,238,255,0.14),
+                inset -11px 0 16px rgba(18,86,167,0.1);
+            backdrop-filter: blur(16px) saturate(118%);
+            -webkit-backdrop-filter: blur(16px) saturate(118%);
+            isolation: isolate;
         }
-        .feature-icon::after { content:''; position:absolute; inset:0; border-radius:inherit; border:1px solid rgba(5,55,123,0.15); }
-        .feature-icon.temper { background: linear-gradient(135deg, rgba(247,148,30,0.1), rgba(248,113,113,0.1)); }
-        .feature-icon.temper::after { border-color: rgba(247,148,30,0.15); }
-        .feature-card h3 { font-size:1.125rem; margin-bottom:10px; }
-        .feature-card p { font-size:0.875rem; color:var(--text-secondary); line-height:1.65; }
+        .feature-icon::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            right: 12px;
+            height: 10px;
+            border-radius: 999px;
+            background: linear-gradient(96deg, rgba(255,255,255,0.88), rgba(255,255,255,0.32) 56%, rgba(255,255,255,0.06));
+            filter: blur(0.35px);
+            pointer-events: none;
+        }
+        .feature-icon::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: calc(var(--radius-md) - 2px);
+            background:
+                linear-gradient(160deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02) 38%, rgba(15,84,162,0.08) 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(235,252,255,0.24),
+                inset 0 10px 18px rgba(255,255,255,0.08),
+                inset 0 -10px 14px rgba(11,70,136,0.09);
+            opacity: 0.95;
+            pointer-events: none;
+        }
+        .feature-icon .glass-noise {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0.14;
+            mix-blend-mode: soft-light;
+            background-image:
+                radial-gradient(circle at 20% 22%, rgba(255,255,255,0.18) 0 0.8px, transparent 0.9px),
+                radial-gradient(circle at 74% 38%, rgba(255,255,255,0.15) 0 0.7px, transparent 0.9px),
+                radial-gradient(circle at 46% 74%, rgba(255,255,255,0.12) 0 0.8px, transparent 0.9px);
+            background-size: 10px 10px, 12px 12px, 11px 11px;
+        }
+        .feature-icon .glass-aberration {
+            position: absolute;
+            inset: 1px;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0.32;
+            box-shadow:
+                inset 1px 0 0 rgba(130,220,255,0.35),
+                inset -1px 0 0 rgba(110,150,255,0.26),
+                inset 0 1px 0 rgba(255,255,255,0.22);
+        }
+        .feature-icon.temper {
+            background:
+                linear-gradient(155deg, rgba(255,245,214,0.34) 0%, rgba(255,218,154,0.18) 24%, rgba(235,150,50,0.1) 56%, rgba(163,85,15,0.08) 100%),
+                radial-gradient(140% 90% at 10% 8%, rgba(255,250,232,0.56) 0%, rgba(255,238,195,0.14) 30%, rgba(255,220,170,0.02) 64%, rgba(255,190,140,0) 100%);
+            border-top-color: rgba(255,246,220,0.88);
+            border-left-color: rgba(255,229,175,0.58);
+            border-right-color: rgba(228,144,42,0.24);
+            border-bottom-color: rgba(176,96,20,0.2);
+            box-shadow:
+                0 12px 30px rgba(40,16,0,0.3),
+                0 2px 9px rgba(255,210,130,0.22),
+                inset 0 1px 0 rgba(255,246,223,0.94),
+                inset 0 -11px 20px rgba(200,122,26,0.12),
+                inset 12px 0 18px rgba(255,230,182,0.14),
+                inset -11px 0 16px rgba(150,78,16,0.1);
+        }
 
-        /* Product visual badge */
+        /* SVG recolor for dark bg (CSS wins over SVG presentation attrs) */
+        .feature-card:not(.temper-card) .feature-icon svg {
+            stroke: rgba(228,249,255,0.96);
+            filter:
+                drop-shadow(0 1px 0 rgba(8,72,132,0.46))
+                drop-shadow(0 0 5px rgba(160,240,255,0.42));
+        }
+        .feature-card.temper-card .feature-icon svg {
+            stroke: rgba(255,246,220,0.96);
+            filter:
+                drop-shadow(0 1px 0 rgba(126,68,8,0.46))
+                drop-shadow(0 0 5px rgba(255,218,145,0.4));
+        }
+
+        /* Badges */
         .product-badge {
             display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
-            border-radius: 100px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1px; margin-bottom: 16px;
+            border-radius: 100px; font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
         }
-        .product-badge.glass-badge { background: rgba(5,55,123,0.15); color: var(--glass-primary); }
-        .product-badge.temper-badge { background: rgba(247,148,30,0.18); color: var(--temper-dark); }
+        .product-badge.glass-badge  { background: rgba(14,165,233,0.18); color: #7dd3fc;  border: 1px solid rgba(14,165,233,0.3); }
+        .product-badge.temper-badge { background: rgba(247,148,30,0.18); color: #fbbf24; border: 1px solid rgba(247,148,30,0.3); }
 
         /* BENEFITS */
         .benefits { background: white; }
@@ -1432,6 +1715,13 @@
                 justify-content: center;
                 text-align: center;
             }
+            .product-panels-stage { min-height: 520px; }
+            .product-panels-stage::after {
+                width: 180px;
+                height: 280px;
+                filter: blur(12px);
+            }
+            .feature-card { padding: 26px; }
             .awards-intro { padding: 16px; }
             .awards-newswall {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1468,6 +1758,7 @@
             .proof-item:last-child { grid-column: 1 / -1; max-width: 280px; margin: 0 auto; }
             .features-grid { grid-template-columns: 1fr; }
             .product-tabs { width: min(100%, 400px); }
+            .product-panels-stage { min-height: 540px; }
             .cta-actions { flex-direction: column; align-items: center; }
             .hero-actions { flex-direction: column; align-items: center; }
             .coverage-stats { grid-template-columns: 1fr; }
@@ -1527,6 +1818,10 @@
             .map-tooltip { font-size: 0.68rem; }
             .product-tabs { width: 100%; gap: 8px; margin: 20px 0 34px; }
             .product-tab { padding: 11px 8px; font-size: 0.8rem; }
+            .product-panels-stage { min-height: 560px; }
+            .feature-card { padding: 22px; }
+            .feature-card h3 { font-size: 1rem; }
+            .feature-card p { font-size: 0.82rem; }
             .awards-intro { padding: 14px; }
             .awards-source-tags { gap: 6px; }
             .awards-source-tag { font-size: 0.75rem; padding: 5px 8px; }
@@ -1722,12 +2017,15 @@
             </div>
         </div>
 
+        <div class="product-panels-stage" id="products-stage">
         <!-- ECG GLASS -->
         <div class="product-panel active" id="panel-glass">
             <div class="features-grid">
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#05377B" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     </div>
                     <h3>Orçamentos</h3>
@@ -1736,6 +2034,8 @@
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#05377B" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                     </div>
                     <h3>Projetos</h3>
@@ -1744,6 +2044,8 @@
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#05377B" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                     </div>
                     <h3>Estoque</h3>
@@ -1752,6 +2054,8 @@
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#05377B" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     </div>
                     <h3>Financeiro</h3>
@@ -1760,6 +2064,8 @@
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#05377B" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                     <h3>RH</h3>
@@ -1768,6 +2074,8 @@
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#05377B" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
                     <h3>Fiscal</h3>
@@ -1782,6 +2090,8 @@
                 <article class="feature-card temper-card reveal visible">
                     <span class="product-badge temper-badge">ECG Temper</span>
                     <div class="feature-icon temper">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F7941E" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     </div>
                     <h3>Módulo Administrativo</h3>
@@ -1790,6 +2100,8 @@
                 <article class="feature-card temper-card reveal visible">
                     <span class="product-badge temper-badge">ECG Temper</span>
                     <div class="feature-icon temper">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F7941E" stroke-width="2"><path d="M12 2v8m0 0l4-4m-4 4L8 6"/><path d="M4.93 10.93a10 10 0 1 0 14.14 0"/></svg>
                     </div>
                     <h3>Módulo de Produção</h3>
@@ -1798,12 +2110,15 @@
                 <article class="feature-card temper-card reveal visible">
                     <span class="product-badge temper-badge">ECG Temper</span>
                     <div class="feature-icon temper">
+                        <span class="glass-noise" aria-hidden="true"></span>
+                        <span class="glass-aberration" aria-hidden="true"></span>
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F7941E" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
                     </div>
                     <h3>Almoxarifado</h3>
                     <p>Controle de estoque de chapas, insumos e materiais de consumo. Gestão de entrada e saída, inventário e ponto de reposição automático.</p>
                 </article>
             </div>
+        </div>
         </div>
     </div>
 </section>
@@ -2121,6 +2436,9 @@
     <span class="tooltip">Fale conosco!</span>
 </a>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
 <script>
 // Header scroll
 const header = document.getElementById('header');
@@ -2213,17 +2531,14 @@ window.addEventListener('resize', () => {
 
 // Product tab switching
 function switchProduct(product) {
-    document.querySelectorAll('.product-tab').forEach(t => { t.classList.remove('active-glass','active-temper'); });
-    document.querySelectorAll('.product-panel').forEach(p => p.classList.remove('active'));
+    // Feedback visual na tab imediatamente
+    document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active-glass', 'active-temper'));
+    document.querySelector(`.product-tab[data-tab="${product}"]`)
+        .classList.add(product === 'glass' ? 'active-glass' : 'active-temper');
 
-    const tab = document.querySelector(`.product-tab[data-tab="${product}"]`);
-    tab.classList.add(product === 'glass' ? 'active-glass' : 'active-temper');
-    document.getElementById(`panel-${product}`).classList.add('active');
-
-    // Re-trigger reveal for newly visible cards
-    document.querySelectorAll(`#panel-${product} .reveal:not(.visible)`).forEach(el => {
-        el.classList.add('visible');
-    });
+    const anim     = window._productAnim;
+    if (!anim || !anim.switchTo) return;
+    anim.switchTo(product);
 }
 
 // FAQ toggle
@@ -2800,6 +3115,182 @@ updateCoverageMap({
 });
 initCoverageMap();
 
+// ─── Glass Cards Animation ────────────────────────────────────────
+(function () {
+    let isProductsInFocus = false;
+    let activePanel = null;
+    let isSwitching = false;
+    const ANIM_MS = 460;
+    const SWAP_BLUR_MS = 80;
+
+    function getCards(panel) {
+        return panel ? [...panel.querySelectorAll('.feature-card')] : [];
+    }
+
+    function setStackTargets(panel) {
+        const cards = getCards(panel);
+        const grid = panel?.querySelector('.features-grid');
+        if (!cards.length || !grid) return;
+        const vw = window.innerWidth;
+        const stackXStep = vw <= 480 ? 5 : (vw <= 768 ? 6.5 : 9);
+        const stackYStep = vw <= 480 ? 1.1 : (vw <= 768 ? 1.5 : 2);
+        const centerXShift = vw <= 480 ? 14 : (vw <= 768 ? 24 : 54);
+        const zDepthStep = vw <= 480 ? 2.1 : (vw <= 768 ? 2.6 : 3.2);
+
+        const gridRect = grid.getBoundingClientRect();
+        const anchorX = gridRect.width * 0.5;
+        const anchorY = gridRect.height * 0.5;
+        const n = cards.length;
+        const mid = (n - 1) / 2;
+
+        cards.forEach((card, i) => {
+            const r = card.getBoundingClientRect();
+            const cardCx = (r.left - gridRect.left) + r.width / 2;
+            const cardCy = (r.top - gridRect.top) + r.height / 2;
+            const centeredX = (i - mid) * stackXStep;
+            const centeredY = (i - mid) * stackYStep;
+
+            card.style.setProperty('--stack-x', `${(anchorX - cardCx) + centeredX + centerXShift}px`);
+            card.style.setProperty('--stack-y', `${(anchorY - cardCy) + centeredY}px`);
+            card.style.setProperty('--stack-z', `${n - i}`);
+            card.style.setProperty('--stack-zp', `${i * zDepthStep}px`);
+            card.style.setProperty('--stack-rz', `${(i - mid) * 0.5}deg`);
+            card.style.transitionDelay = `${i * 36}ms`;
+        });
+    }
+
+    function stackCards(panel) {
+        if (!panel) return;
+        activePanel = panel;
+        setStackTargets(panel);
+        getCards(panel).forEach(card => card.style.setProperty('--stack-blur', '0px'));
+        panel.classList.remove('is-open');
+        panel.classList.add('is-stacked');
+    }
+
+    function spreadCards(panel) {
+        if (!panel) return;
+        activePanel = panel;
+        setStackTargets(panel);
+        getCards(panel).forEach(card => card.style.setProperty('--stack-blur', '0px'));
+        panel.classList.add('is-open');
+        panel.classList.remove('is-stacked');
+    }
+
+    function closeCards(panel, onComplete) {
+        if (!panel) { onComplete?.(); return; }
+        stackCards(panel);
+        window.setTimeout(() => onComplete?.(), ANIM_MS + 80);
+    }
+
+    function stabilizeStageHeight() {
+        const stage = document.getElementById('products-stage');
+        if (!stage) return;
+        const panels = [...stage.querySelectorAll('.product-panel')];
+        if (!panels.length) return;
+
+        let maxHeight = 0;
+        panels.forEach(panel => {
+            const h = panel.scrollHeight;
+            if (h > maxHeight) maxHeight = h;
+        });
+        if (maxHeight > 0) {
+            stage.style.minHeight = `${maxHeight}px`;
+            stage.style.setProperty('--products-stage-height', `${maxHeight}px`);
+        }
+    }
+
+    function updateFocusState() {
+        const section = document.getElementById('produtos');
+        if (!section) return;
+        const r = section.getBoundingClientRect();
+        const inFocus = r.top < window.innerHeight * 0.72 && r.bottom > window.innerHeight * 0.28;
+        if (inFocus === isProductsInFocus) return;
+        isProductsInFocus = inFocus;
+        if (!activePanel) activePanel = document.querySelector('.product-panel.active');
+        if (!activePanel) return;
+        if (isProductsInFocus) spreadCards(activePanel);
+        else stackCards(activePanel);
+    }
+
+    function initPanels() {
+        const panels = [...document.querySelectorAll('.product-panel')];
+        panels.forEach(panel => {
+            panel.classList.remove('is-open', 'is-stacked');
+            if (panel.classList.contains('active')) activePanel = panel;
+            else panel.classList.add('is-stacked');
+        });
+
+        if (!activePanel) activePanel = document.querySelector('.product-panel.active');
+        if (!activePanel) return;
+        stabilizeStageHeight();
+        stackCards(activePanel);
+        updateFocusState();
+    }
+
+    function switchTo(product) {
+        if (isSwitching) return;
+        const stage = document.getElementById('products-stage');
+        const nextPanel = document.getElementById(`panel-${product}`);
+        if (!nextPanel) return;
+        const current = activePanel || document.querySelector('.product-panel.active');
+        if (current && current.id === nextPanel.id) return;
+
+        isSwitching = true;
+        const openNext = () => {
+            if (current) {
+                current.classList.remove('active');
+                current.classList.add('is-stacked');
+            }
+            nextPanel.classList.add('active');
+            setStackTargets(nextPanel);
+            nextPanel.classList.remove('is-open');
+            nextPanel.classList.add('is-stacked');
+            activePanel = nextPanel;
+            if (isProductsInFocus) spreadCards(nextPanel);
+            window.setTimeout(() => {
+                if (stage) stage.classList.remove('is-morphing');
+                isSwitching = false;
+            }, ANIM_MS + 80);
+        };
+
+        if (!current) { openNext(); return; }
+
+        if (isProductsInFocus) {
+            if (stage) stage.classList.add('is-morphing');
+            getCards(current).forEach(card => card.style.setProperty('--stack-blur', '2.2px'));
+            closeCards(current, () => {
+                window.setTimeout(openNext, SWAP_BLUR_MS);
+            });
+        } else {
+            current.classList.remove('active');
+            openNext();
+        }
+    }
+
+    window.addEventListener('resize', () => {
+        if (!activePanel) activePanel = document.querySelector('.product-panel.active');
+        if (!activePanel) return;
+        stabilizeStageHeight();
+        if (isProductsInFocus) {
+            spreadCards(activePanel);
+        } else {
+            stackCards(activePanel);
+        }
+    });
+
+    window.addEventListener('scroll', updateFocusState, { passive: true });
+    window.addEventListener('load', initPanels);
+    requestAnimationFrame(() => requestAnimationFrame(initPanels));
+
+    window._productAnim = {
+        stackCards, closeCards, spreadCards,
+        isProductsInFocus: () => isProductsInFocus,
+        isSwitching: () => isSwitching,
+        switchTo
+    };
+}());
+
 // Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', function(e) {
@@ -2812,7 +3303,6 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 </script>
-
 
 </body>
 </html>
