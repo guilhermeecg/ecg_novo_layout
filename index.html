@@ -233,7 +233,8 @@
         .hero { min-height: 100vh; display: flex; align-items: center; padding-top: 100px; position: relative; overflow: hidden; background: transparent; }
         .hero-bg-image {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
-            background: url('./assets/custom-bg.png') center/cover no-repeat;
+            background: url('https://ecgsistemas.com/ecg_site/biblioteca/img/img_fachada_ecg.jpg') center/cover no-repeat;
+            background-position: center 30%;
         }
         .hero-bg-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
@@ -422,6 +423,108 @@
             pointer-events: none; z-index: 0;
         }
         .products .container { position: relative; z-index: 1; }
+
+        /* ─── Glass panes background ────────────────────────────────── */
+        .gpanes-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .gpanes-track {
+            position: absolute;
+            top: -30%;
+            height: 160%;
+            left: 0;
+            display: flex;
+            align-items: flex-start;
+            will-change: transform;
+        }
+        .gpane {
+            flex-shrink: 0;
+            height: 100%;
+            transform: skewX(-14deg);
+            transform-origin: center center;
+            position: relative;
+            /* Nearly invisible body — real glass transmits, not paints */
+            background: rgba(130, 215, 200, 0.012);
+            /* The real glass effect: background content brightens through the pane */
+            backdrop-filter: brightness(1.18) saturate(1.22);
+            -webkit-backdrop-filter: brightness(1.18) saturate(1.22);
+            /* Left-edge bloom (light hitting glass face) + right shadow (blocked light) */
+            box-shadow:
+                -6px 0 24px rgba(140,228,215,0.14),
+                -1px 0 5px rgba(210,252,245,0.10),
+                6px 0 20px rgba(0,0,0,0.36);
+        }
+        /* Left-edge face reflection — narrow, anchored to the left, fades rightward */
+        .gpane::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            left: 0; width: 32%;
+            background: linear-gradient(90deg,
+                rgba(255,255,255,0.16) 0%,
+                rgba(210,250,244,0.08) 28%,
+                rgba(170,238,228,0.03) 60%,
+                transparent 100%
+            );
+            pointer-events: none;
+        }
+        /* Top 1px catchlight — light striking the top rim, tapered at edges */
+        .gpane::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(90deg, transparent 8%, rgba(255,255,255,0.50) 32%, rgba(255,255,255,0.75) 50%, rgba(255,255,255,0.50) 68%, transparent 92%);
+            background-size: 100% 1px;
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            pointer-events: none;
+        }
+
+        /* ── Pane variants: depth indicated by width, edge brightness, and opacity ── */
+
+        /* Large foreground pane */
+        .gpane-a {
+            width: 280px;
+            margin-right: 320px;
+            border-left:  2px solid rgba(200,252,244,0.70);
+            border-right: 1px solid rgba(0,0,0,0.26);
+        }
+        /* Mid-distance, narrower, further = subtler */
+        .gpane-b {
+            width: 160px;
+            margin-right: 440px;
+            border-left:  1.5px solid rgba(188,246,236,0.48);
+            border-right: 1px solid rgba(0,0,0,0.18);
+            opacity: 0.68;
+        }
+        /* Another foreground pane */
+        .gpane-c {
+            width: 240px;
+            margin-right: 360px;
+            border-left:  1.5px solid rgba(194,248,238,0.60);
+            border-right: 1px solid rgba(0,0,0,0.22);
+        }
+        /* Background pane — thin, most distant, very faint */
+        .gpane-d {
+            width: 120px;
+            margin-right: 480px;
+            border-left:  1px solid rgba(180,240,228,0.35);
+            border-right: 1px solid rgba(0,0,0,0.12);
+            opacity: 0.50;
+        }
+        /* Medium pane */
+        .gpane-e {
+            width: 200px;
+            margin-right: 280px;
+            border-left:  1.5px solid rgba(190,245,234,0.54);
+            border-right: 1px solid rgba(0,0,0,0.18);
+            opacity: 0.82;
+        }
         .products .section-label { background: rgba(14,165,233,0.18); color: #7dd3fc; border: 1px solid rgba(14,165,233,0.25); }
         .products .section-title { color: #f0f9ff; }
         .products .section-subtitle { color: rgba(186,210,255,0.62); }
@@ -439,42 +542,17 @@
         .product-tab.active-temper { border-color: rgba(247,148,30,0.5); color: #fbbf24; background: rgba(247,148,30,0.13); box-shadow: 0 4px 24px rgba(247,148,30,0.2); border-bottom-color: #fbbf24; }
 
         .product-panel {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: opacity 420ms cubic-bezier(0.22, 0.61, 0.36, 1), visibility 420ms;
+            display: none;
         }
         .product-panel.active {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
+            display: block;
         }
         .product-panels-stage {
             position: relative;
-            min-height: 320px;
-            height: var(--products-stage-height, auto);
+            transition: opacity 0.22s ease;
         }
-        .product-panels-stage::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 220px;
-            height: 340px;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
+        .product-panels-stage.fading {
             opacity: 0;
-            z-index: 20;
-            border-radius: 28px;
-            background:
-                radial-gradient(ellipse at center, rgba(120,220,255,0.24) 0%, rgba(80,170,255,0.16) 45%, rgba(10,30,80,0) 78%);
-            filter: blur(16px);
-            transition: opacity 260ms ease;
-        }
-        .product-panels-stage.is-morphing::after {
-            opacity: 1;
         }
         @keyframes fadeSlideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
         @keyframes awards-neon-orbit {
@@ -505,12 +583,11 @@
         }
 
         /* ─── Glass Cards ─────────────────────────────────────────────── */
-        .features-grid {
+        .features-scroll-col {
             display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 28px;
-            position: relative;
-            padding: 8px 0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            padding: 4px 0;
         }
 
         .feature-card {
@@ -520,136 +597,119 @@
             overflow: hidden;
             cursor: default;
             will-change: transform;
-            transform-origin: left center;
-            transition: transform 760ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 420ms ease, filter 260ms ease;
 
-            /* Core glass surface */
-            background: linear-gradient(
-                140deg,
-                rgba(255,255,255,0.16) 0%,
-                rgba(200,225,255,0.07) 45%,
-                rgba(255,255,255,0.04) 100%
-            );
-            backdrop-filter: blur(26px) saturate(160%);
-            -webkit-backdrop-filter: blur(26px) saturate(160%);
+            /* Glass fill + static surface haze in one compound background */
+            background:
+                linear-gradient(148deg,
+                    rgba(255,255,255,0.08) 0%,
+                    rgba(255,255,255,0.03) 32%,
+                    transparent 54%,
+                    rgba(0,16,50,0.04) 100%
+                ),
+                linear-gradient(148deg,
+                    rgba(255,255,255,0.06) 0%,
+                    rgba(200,225,255,0.025) 60%,
+                    rgba(180,215,255,0.008) 100%
+                );
 
-            /* Asymmetric border — light source top-left */
-            border-top:    1px solid rgba(255,255,255,0.55);
-            border-left:   1px solid rgba(255,255,255,0.28);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            border-right:  1px solid rgba(255,255,255,0.10);
+            backdrop-filter: blur(32px) saturate(210%) brightness(1.06);
+            -webkit-backdrop-filter: blur(32px) saturate(210%) brightness(1.06);
+
+            border-top:    1px solid rgba(255,255,255,0.50);
+            border-left:   1px solid rgba(210,240,230,0.18);
+            border-right:  1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
 
             box-shadow:
-                0 32px 64px rgba(0,0,0,0.5),
-                0 8px 24px rgba(0,0,0,0.3),
-                inset 0 1px 0 rgba(255,255,255,0.45),
-                inset 0 -1px 0 rgba(0,0,0,0.12),
-                inset 1px 0 0 rgba(255,255,255,0.18),
-                /* left-edge thickness — lâminas de vidro empilhadas */
-                -4px  0 2px rgba(160,220,200,0.55),
-                -8px  0 2px rgba(160,220,200,0.35),
-                -12px 0 2px rgba(160,220,200,0.20),
-                -16px 0 2px rgba(160,220,200,0.10),
-                -20px 0 2px rgba(160,220,200,0.05);
+                0 18px 52px rgba(0,0,0,0.55),
+                0 4px 14px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.40),
+                inset 0 0 22px rgba(255,255,255,0.025),
+                inset 0 -1px 0 rgba(0,12,45,0.38),
+                -1px 0 4px rgba(110,195,175,0.15);
 
-            transition: box-shadow 0.4s ease;
-        }
-        .product-panel.is-stacked .feature-card {
-            transform:
-                translate3d(var(--stack-x, 0px), var(--stack-y, 0px), var(--stack-zp, 0px))
-                rotateY(-72deg)
-                rotateZ(var(--stack-rz, 0deg));
-            z-index: var(--stack-z, 1);
-            box-shadow:
-                -2px 0 0 rgba(220,250,255,0.85),
-                -4px 0 0 rgba(170,235,255,0.72),
-                -6px 0 0 rgba(120,215,255,0.58),
-                -8px 0 0 rgba(80,185,240,0.45),
-                -10px 0 0 rgba(55,145,210,0.35),
-                -12px 0 0 rgba(35,110,180,0.26),
-                -14px 0 0 rgba(20,80,150,0.19),
-                -17px 0 0 rgba(16,68,130,0.15),
-                -20px 0 0 rgba(12,54,110,0.11),
-                0 18px 32px rgba(8,18,45,0.45);
-            filter: blur(var(--stack-blur, 0px));
-        }
-        .product-panel.is-open .feature-card {
-            transform: translate3d(0, 0, 0) rotateY(0deg) rotateZ(0deg);
-            z-index: 1;
-        }
-        .product-panel.is-stacked .feature-card::after {
-            opacity: 0.95;
+            transition: transform 0.32s ease, box-shadow 0.32s ease;
         }
 
-        /* Diagonal refraction stripe */
+        /* Light sweep — off-screen by default, slides across on hover */
         .feature-card::before {
             content: '';
             position: absolute;
-            top: -60%; left: -40%;
-            width: 50%; height: 220%;
-            background: linear-gradient(
-                105deg,
-                transparent 30%,
-                rgba(255,255,255,0.05) 44%,
-                rgba(255,255,255,0.13) 50%,
-                rgba(255,255,255,0.05) 56%,
-                transparent 68%
+            top: 0; bottom: 0;
+            left: -75%; width: 55%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(255,255,255,0.03) 25%,
+                rgba(255,255,255,0.10) 50%,
+                rgba(255,255,255,0.03) 75%,
+                transparent 100%
             );
             transform: skewX(-8deg);
+            transition: left 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             pointer-events: none;
-            transition: left 0.55s ease;
         }
-        .feature-card:hover::before { left: 110%; }
+        .feature-card:hover::before { left: 120%; }
 
-        /* Top-edge catchlight */
+        /* Top-edge catchlight + faint rim on hover */
         .feature-card::after {
             content: '';
             position: absolute;
-            top: 0; left: 10%; right: 10%;
+            top: 0; left: 12%; right: 12%;
             height: 1px;
             background: linear-gradient(90deg,
                 transparent,
-                rgba(255,255,255,0.65) 25%,
-                rgba(255,255,255,0.95) 50%,
-                rgba(255,255,255,0.65) 75%,
+                rgba(255,255,255,0.38) 25%,
+                rgba(255,255,255,0.88) 50%,
+                rgba(255,255,255,0.38) 75%,
                 transparent
             );
             pointer-events: none;
         }
 
         .feature-card:hover {
+            transform: translateY(-4px) scale(1.008);
             box-shadow:
-                0 40px 80px rgba(0,0,0,0.55),
-                0 12px 32px rgba(0,0,0,0.35),
-                0 0 48px rgba(14,165,233,0.14),
-                inset 0 1px 0 rgba(255,255,255,0.5),
-                inset 0 -1px 0 rgba(0,0,0,0.1),
-                inset 1px 0 0 rgba(255,255,255,0.22);
+                0 28px 68px rgba(0,0,0,0.62),
+                0 8px 20px rgba(0,0,0,0.40),
+                /* subtle rim highlight — all edges catch light simultaneously */
+                0 0 0 1px rgba(255,255,255,0.10),
+                inset 0 1px 0 rgba(255,255,255,0.50),
+                inset 0 0 28px rgba(255,255,255,0.035),
+                inset 0 -1px 0 rgba(0,12,45,0.44),
+                -1px 0 6px rgba(110,195,175,0.22),
+                0 0 32px rgba(14,165,233,0.09);
         }
 
-        /* Temper — warm amber glass */
+        /* Temper — heat-treated glass has a warm amber tint */
         .feature-card.temper-card {
             background: linear-gradient(
-                140deg,
-                rgba(255,210,120,0.14) 0%,
-                rgba(247,148,30,0.06) 45%,
-                rgba(255,255,255,0.03) 100%
+                148deg,
+                rgba(255,220,130,0.07) 0%,
+                rgba(240,165,50,0.03) 60%,
+                rgba(200,120,20,0.01) 100%
             );
-            border-top-color:  rgba(255,215,130,0.58);
-            border-left-color: rgba(255,215,130,0.28);
+            border-top-color:  rgba(255,235,165,0.50);
+            border-left-color: rgba(240,210,140,0.18);
+            border-right-color:  rgba(255,255,255,0.04);
+            border-bottom-color: rgba(255,255,255,0.03);
             box-shadow:
-                0 32px 64px rgba(0,0,0,0.5),
-                0 8px 24px rgba(0,0,0,0.3),
-                inset 0 1px 0 rgba(255,215,130,0.5),
-                inset 0 -1px 0 rgba(0,0,0,0.1);
+                0 18px 52px rgba(0,0,0,0.55),
+                0 4px 14px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,235,150,0.38),
+                inset 0 0 22px rgba(255,210,80,0.025),
+                inset 0 -1px 0 rgba(45,15,0,0.38),
+                -1px 0 4px rgba(195,155,70,0.15);
         }
         .feature-card.temper-card:hover {
             box-shadow:
-                0 40px 80px rgba(0,0,0,0.55),
-                0 12px 32px rgba(0,0,0,0.35),
-                0 0 48px rgba(247,148,30,0.18),
-                inset 0 1px 0 rgba(255,215,130,0.55),
-                inset 0 -1px 0 rgba(0,0,0,0.1);
+                0 28px 68px rgba(0,0,0,0.62),
+                0 8px 20px rgba(0,0,0,0.40),
+                0 0 0 1px rgba(255,230,130,0.10),
+                inset 0 1px 0 rgba(255,235,150,0.50),
+                inset 0 0 28px rgba(255,210,80,0.035),
+                inset 0 -1px 0 rgba(45,15,0,0.44),
+                -1px 0 6px rgba(195,155,70,0.22),
+                0 0 32px rgba(247,148,30,0.09);
         }
 
         /* Typography on dark glass */
@@ -849,6 +909,7 @@
         }
         .awards-newswall {
             margin-top: 16px;
+            position: relative;
             display: grid;
             grid-template-columns: repeat(12, minmax(0, 1fr));
             grid-template-areas:
@@ -861,13 +922,16 @@
         }
         .award-story {
             position: relative;
+            z-index: 1;
             overflow: hidden;
             min-width: 0;
             padding: 18px 18px 16px;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(5,55,123,0.12);
-            background: rgba(255,255,255,0.92);
-            box-shadow: 0 8px 20px rgba(5,55,123,0.07);
+            border: 1px solid rgba(255,255,255,0.88);
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(12px) saturate(170%);
+            -webkit-backdrop-filter: blur(12px) saturate(170%);
+            box-shadow: 0 8px 22px rgba(5,55,123,0.07), inset 0 1px 0 rgba(255,255,255,0.88);
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -875,8 +939,28 @@
         }
         .award-story:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 26px rgba(5,55,123,0.11);
-            border-color: rgba(5,55,123,0.2);
+            box-shadow: 0 14px 30px rgba(5,55,123,0.11), inset 0 1px 0 rgba(255,255,255,0.95);
+            border-color: rgba(255,255,255,0.95);
+        }
+        .award-story-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-bottom: 2px;
+        }
+        .award-story.source-jdv .award-story-icon {
+            background: rgba(5,55,123,0.07);
+            border: 1px solid rgba(5,55,123,0.12);
+            color: var(--glass-primary);
+        }
+        .award-story.source-pja .award-story-icon {
+            background: rgba(217,119,6,0.08);
+            border: 1px solid rgba(217,119,6,0.15);
+            color: #b45309;
         }
         .award-story h3 {
             font-size: 1.125rem;
@@ -1049,8 +1133,8 @@
             font-size: 0.875rem;
         }
         .award-story.source-jdv {
-            border-top: 4px solid #0891b2;
-            background: linear-gradient(150deg, #ffffff, #edf9ff);
+            border-top: 3px solid rgba(8,145,178,0.55);
+            background: linear-gradient(150deg, rgba(255,255,255,0.78), rgba(237,249,255,0.70));
         }
         .award-story.source-jdv .award-story-source {
             color: #0f3f80;
@@ -1058,13 +1142,182 @@
             border-color: rgba(15,63,128,0.14);
         }
         .award-story.source-pja {
-            border-top: 4px solid #d97706;
-            background: linear-gradient(150deg, #ffffff, #fff6e8);
+            border-top: 3px solid rgba(217,119,6,0.52);
+            background: linear-gradient(150deg, rgba(255,255,255,0.78), rgba(255,246,232,0.70));
         }
         .award-story.source-pja .award-story-source {
             color: #8a4a00;
             background: rgba(245,158,11,0.15);
             border-color: rgba(245,158,11,0.3);
+        }
+
+        /* ── Awards glass cards ──────────────────────────────────────── */
+        @keyframes conn-flow {
+            from { stroke-dashoffset: 24; }
+            to   { stroke-dashoffset: 0; }
+        }
+        @keyframes conn-glow {
+            0%, 100% { opacity: 0.22; }
+            50%       { opacity: 0.48; }
+        }
+        .awards-cards-wrap {
+            position: relative;
+            margin-top: 40px;
+        }
+        .awards-connectors {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+        .conn-line {
+            fill: none;
+            stroke: rgba(14,165,233,0.30);
+            stroke-width: 1;
+            stroke-dasharray: 3 8;
+            vector-effect: non-scaling-stroke;
+            animation: conn-flow 2.2s linear infinite, conn-glow 3.8s ease-in-out infinite;
+        }
+        .conn-line:nth-child(2) { animation-delay: -0.6s,  -0.9s; }
+        .conn-line:nth-child(3) { animation-delay: -1.2s,  -1.8s; }
+        .conn-line:nth-child(4) { animation-delay: -1.7s,  -2.6s; }
+        .conn-line:nth-child(5) { animation-delay: -0.3s,  -0.5s; }
+        .conn-line:nth-child(6) { animation-delay: -0.9s,  -2.0s; }
+        .conn-line:nth-child(7) { animation-delay: -1.5s,  -3.2s; }
+        .conn-node {
+            fill: rgba(14,165,233,0.42);
+            animation: conn-glow 3.8s ease-in-out infinite;
+        }
+        .conn-node:nth-child(n+9)  { animation-delay: -1.2s; }
+        .conn-node:nth-child(n+11) { animation-delay: -2.4s; }
+        .awards-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .award-card {
+            padding: 22px 20px;
+            border-radius: var(--radius-lg);
+            background: rgba(255,255,255,0.78);
+            backdrop-filter: blur(14px) saturate(170%);
+            -webkit-backdrop-filter: blur(14px) saturate(170%);
+            border: 1px solid rgba(255,255,255,0.90);
+            box-shadow:
+                0 8px 28px rgba(5,55,123,0.07),
+                0 2px 6px rgba(5,55,123,0.04),
+                inset 0 1px 0 rgba(255,255,255,0.88);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.26s ease, box-shadow 0.26s ease;
+        }
+        .award-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 16px 38px rgba(5,55,123,0.11),
+                0 4px 10px rgba(5,55,123,0.06),
+                inset 0 1px 0 rgba(255,255,255,0.95);
+        }
+        .award-card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .award-card.source-jdv .award-card-icon {
+            background: rgba(5,55,123,0.07);
+            border: 1px solid rgba(5,55,123,0.13);
+            color: var(--glass-primary);
+        }
+        .award-card.source-pja .award-card-icon {
+            background: rgba(217,119,6,0.08);
+            border: 1px solid rgba(217,119,6,0.16);
+            color: #b45309;
+        }
+        .award-card-source {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.69rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+        .award-card.source-jdv .award-card-source {
+            color: #0f3f80;
+            background: rgba(15,63,128,0.08);
+            border: 1px solid rgba(15,63,128,0.13);
+        }
+        .award-card.source-pja .award-card-source {
+            color: #8a4a00;
+            background: rgba(245,158,11,0.12);
+            border: 1px solid rgba(245,158,11,0.24);
+        }
+        .award-card h3 {
+            font-size: 0.975rem;
+            font-weight: 700;
+            line-height: 1.34;
+            color: var(--text-primary);
+        }
+        .award-card p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.58;
+            margin: 0;
+        }
+        .awards-banner {
+            margin-top: 16px;
+            padding: 20px 26px;
+            border-radius: var(--radius-lg);
+            background: rgba(5,55,123,0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(5,55,123,0.10);
+            box-shadow: 0 4px 18px rgba(5,55,123,0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .awards-banner-icon {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: rgba(14,165,233,0.09);
+            border: 1px solid rgba(14,165,233,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0284c7;
+        }
+        .awards-banner h3 {
+            font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .awards-banner p {
+            font-size: 0.835rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        @media (max-width: 900px) {
+            .awards-cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .awards-connectors { display: none; }
+        }
+        @media (max-width: 560px) {
+            .awards-cards-grid { grid-template-columns: 1fr; }
+            .awards-banner { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
 
         /* COVERAGE - REAL BRAZIL MAP */
@@ -1130,6 +1383,11 @@
             fill: rgba(14,165,233,0.88) !important;
             stroke: rgba(103,232,249,0.98) !important;
             filter: drop-shadow(0 0 9px rgba(56,189,248,0.52));
+        }
+        .brazil-map-svg path.state.is-locked {
+            fill: rgba(2,132,199,0.92) !important;
+            stroke: rgba(56,189,248,1) !important;
+            filter: drop-shadow(0 0 12px rgba(56,189,248,0.68)) !important;
         }
         .brazil-map-svg path.state.no-client {
             fill: rgba(71,85,105,0.18);
@@ -1519,6 +1777,44 @@
         .whatsapp-float:hover { transform:scale(1.1) translateY(-4px); box-shadow:0 8px 30px rgba(37,211,102,0.5); }
         .whatsapp-float .tooltip { position:absolute; right:70px; background:white; color:var(--text-primary); padding:8px 16px; border-radius:var(--radius-sm); font-size:0.8rem; font-weight:500; white-space:nowrap; box-shadow:var(--shadow-md); opacity:0; pointer-events:none; transition:var(--transition); }
         .whatsapp-float:hover .tooltip { opacity:1; }
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 98px;
+            right: 36px;
+            width: 44px;
+            height: 44px;
+            background: rgba(8, 18, 48, 0.82);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.68);
+            cursor: pointer;
+            z-index: 998;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity 0.28s ease, transform 0.28s ease, background 0.22s ease, color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.32);
+        }
+        .scroll-top-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .scroll-top-btn:hover {
+            background: rgba(14, 165, 233, 0.22);
+            border-color: rgba(14, 165, 233, 0.42);
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 22px rgba(14,165,233,0.22);
+        }
+        @media (max-width: 480px) {
+            .scroll-top-btn { bottom: 90px; right: 38px; width: 40px; height: 40px; }
+        }
 
         /* SCROLL REVEAL */
         .reveal { opacity:0; transform:translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -1533,6 +1829,7 @@
             .hero-visual { order:-1; }
             .hero-3d-container { max-width:400px; margin:0 auto; }
             .features-grid { grid-template-columns:repeat(2,1fr); }
+            .features-scroll-col { grid-template-columns:repeat(2,1fr); }
             .benefits-grid { grid-template-columns:1fr; gap:40px; }
             .coverage-grid { grid-template-columns:1fr; gap:40px; text-align:center; }
             .brazil-map-container { order:-1; width:min(100%,430px); }
@@ -1647,6 +1944,7 @@
                 justify-content: center;
             }
             .features-grid { grid-template-columns:1fr; }
+            .features-scroll-col { grid-template-columns:1fr; }
             .social-proof-bar { padding: 40px 0; }
             .social-proof-video iframe { opacity: 0.12; }
             .proof-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
@@ -1715,12 +2013,6 @@
                 justify-content: center;
                 text-align: center;
             }
-            .product-panels-stage { min-height: 520px; }
-            .product-panels-stage::after {
-                width: 180px;
-                height: 280px;
-                filter: blur(12px);
-            }
             .feature-card { padding: 26px; }
             .awards-intro { padding: 16px; }
             .awards-newswall {
@@ -1757,8 +2049,8 @@
             .proof-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
             .proof-item:last-child { grid-column: 1 / -1; max-width: 280px; margin: 0 auto; }
             .features-grid { grid-template-columns: 1fr; }
+            .features-scroll-col { grid-template-columns: 1fr; }
             .product-tabs { width: min(100%, 400px); }
-            .product-panels-stage { min-height: 540px; }
             .cta-actions { flex-direction: column; align-items: center; }
             .hero-actions { flex-direction: column; align-items: center; }
             .coverage-stats { grid-template-columns: 1fr; }
@@ -1818,7 +2110,6 @@
             .map-tooltip { font-size: 0.68rem; }
             .product-tabs { width: 100%; gap: 8px; margin: 20px 0 34px; }
             .product-tab { padding: 11px 8px; font-size: 0.8rem; }
-            .product-panels-stage { min-height: 560px; }
             .feature-card { padding: 22px; }
             .feature-card h3 { font-size: 1rem; }
             .feature-card p { font-size: 0.82rem; }
@@ -1951,7 +2242,7 @@
                         shadow-intensity="1.2"
                         shadow-softness="0.5"
                         exposure="1.4"
-                        environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
+                        environment-image="neutral"
                         skybox-height="0"
                         camera-target="auto auto auto"
                         camera-orbit="40deg 75deg auto"
@@ -1976,16 +2267,6 @@
 
 <!-- SOCIAL PROOF BAR -->
 <section class="social-proof-bar" aria-label="Números de impacto">
-    <div class="social-proof-video" aria-hidden="true">
-        <iframe
-            src="https://www.youtube-nocookie.com/embed/XwEiKrbQ7cI?autoplay=1&mute=1&controls=0&loop=1&playlist=XwEiKrbQ7cI&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1"
-            title="Vídeo de fundo"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            referrerpolicy="strict-origin-when-cross-origin"
-            tabindex="-1"
-        ></iframe>
-    </div>
-    <div class="social-proof-overlay" aria-hidden="true"></div>
     <div class="container">
         <div class="proof-grid">
             <div class="proof-item reveal"><div class="proof-number" data-target="132358" data-suffix="/mês">0</div><div class="proof-label">Orçamentos cadastrados</div></div>
@@ -1999,6 +2280,20 @@
 
 <!-- PRODUTOS COM TABS -->
 <section class="products section" id="produtos" aria-labelledby="products-title">
+    <div class="gpanes-bg" aria-hidden="true">
+        <div class="gpanes-track">
+            <div class="gpane gpane-a"></div>
+            <div class="gpane gpane-b"></div>
+            <div class="gpane gpane-c"></div>
+            <div class="gpane gpane-d"></div>
+            <div class="gpane gpane-e"></div>
+            <div class="gpane gpane-a"></div>
+            <div class="gpane gpane-b"></div>
+            <div class="gpane gpane-c"></div>
+            <div class="gpane gpane-d"></div>
+            <div class="gpane gpane-e"></div>
+        </div>
+    </div>
     <div class="container">
         <div class="text-center">
             <span class="section-label">Nossos produtos</span>
@@ -2020,7 +2315,7 @@
         <div class="product-panels-stage" id="products-stage">
         <!-- ECG GLASS -->
         <div class="product-panel active" id="panel-glass">
-            <div class="features-grid">
+            <div class="features-scroll-col">
                 <article class="feature-card reveal">
                     <span class="product-badge glass-badge">ECG Glass</span>
                     <div class="feature-icon">
@@ -2086,7 +2381,7 @@
 
         <!-- ECG TEMPER -->
         <div class="product-panel" id="panel-temper">
-            <div class="features-grid">
+            <div class="features-scroll-col">
                 <article class="feature-card temper-card reveal visible">
                     <span class="product-badge temper-badge">ECG Temper</span>
                     <div class="feature-icon temper">
@@ -2173,11 +2468,28 @@
         </div>
 
         <div class="awards-newswall">
+            <!-- Animated connector lines — positioned absolute over the newswall grid -->
+            <svg class="awards-connectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <line class="conn-line" x1="33"  y1="27" x2="83.5" y2="18"/>
+                <line class="conn-line" x1="33"  y1="27" x2="83.5" y2="38"/>
+                <line class="conn-line" x1="83.5" y1="18" x2="83.5" y2="38"/>
+                <line class="conn-line" x1="33"  y1="27" x2="16.7" y2="65"/>
+                <line class="conn-line" x1="33"  y1="27" x2="50"   y2="65"/>
+                <line class="conn-line" x1="83.5" y1="38" x2="83.3" y2="65"/>
+                <line class="conn-line" x1="16.7" y1="65" x2="50"   y2="65"/>
+                <line class="conn-line" x1="50"   y1="65" x2="83.3" y2="65"/>
+                <circle class="conn-node" cx="33"   cy="27"  r="1.6"/>
+                <circle class="conn-node" cx="83.5" cy="18"  r="1.3"/>
+                <circle class="conn-node" cx="83.5" cy="38"  r="1.3"/>
+                <circle class="conn-node" cx="16.7" cy="65"  r="1.3"/>
+                <circle class="conn-node" cx="50"   cy="65"  r="1.3"/>
+                <circle class="conn-node" cx="83.3" cy="65"  r="1.3"/>
+            </svg>
+
             <article class="award-story lead source-jdv reveal">
-                <figure class="award-story-facade">
-                    <img src="https://ecgsistemas.com/ecg_site/biblioteca/img/img_fachada_ecg.jpg" alt="Fachada da ECG Sistemas" loading="lazy">
-                    <figcaption>Sede ECG Sistemas</figcaption>
-                </figure>
+                <div class="award-story-icon" style="width:44px;height:44px;border-radius:12px;margin-bottom:6px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v7a6 6 0 0 1-12 0V2Z"/><path d="M6 5H2v2a4 4 0 0 0 4 4"/><path d="M18 5h4v2a4 4 0 0 1-4 4"/><path d="M12 15v2"/><path d="M10 17h4"/><path d="M8 21h8"/></svg>
+                </div>
                 <h3>ECG é eleito o melhor sistema do setor vidreiro</h3>
                 <p class="award-story-source">Jornal do Vidro</p>
                 <p class="award-story-desc">Reconhecimento máximo pela excelência da ECG em gestão para vidraçarias, esquadrias e operações de alta complexidade no mercado brasileiro.</p>
@@ -2188,30 +2500,45 @@
             </article>
 
             <article class="award-story side-one source-jdv reveal">
+                <div class="award-story-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v7a6 6 0 0 1-12 0V2Z"/><path d="M6 5H2v2a4 4 0 0 0 4 4"/><path d="M18 5h4v2a4 4 0 0 1-4 4"/><path d="M12 15v2"/><path d="M10 17h4"/><path d="M8 21h8"/></svg>
+                </div>
                 <h3>Melhores do Ano</h3>
                 <p class="award-story-source">Jornal do Vidro</p>
                 <p class="award-story-desc">Presença recorrente entre as marcas mais relevantes para a evolução do mercado vidreiro brasileiro.</p>
             </article>
 
             <article class="award-story side-two source-pja reveal">
+                <div class="award-story-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v7a6 6 0 0 1-12 0V2Z"/><path d="M6 5H2v2a4 4 0 0 0 4 4"/><path d="M18 5h4v2a4 4 0 0 1-4 4"/><path d="M12 15v2"/><path d="M10 17h4"/><path d="M8 21h8"/></svg>
+                </div>
                 <h3>Sistema mais Eficiente</h3>
                 <p class="award-story-source">Prêmio José Alves</p>
                 <p class="award-story-desc">Reconhecimento técnico por impacto real em produtividade operacional.</p>
             </article>
 
             <article class="award-story card-one source-jdv reveal">
+                <div class="award-story-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v7a6 6 0 0 1-12 0V2Z"/><path d="M6 5H2v2a4 4 0 0 0 4 4"/><path d="M18 5h4v2a4 4 0 0 1-4 4"/><path d="M12 15v2"/><path d="M10 17h4"/><path d="M8 21h8"/></svg>
+                </div>
                 <h3>Melhor Sistema para Varejo</h3>
                 <p class="award-story-source">Jornal do Vidro</p>
                 <p class="award-story-desc">Controle e velocidade para vidraçarias e esquadrias.</p>
             </article>
 
             <article class="award-story card-two source-pja reveal">
+                <div class="award-story-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v7a6 6 0 0 1-12 0V2Z"/><path d="M6 5H2v2a4 4 0 0 0 4 4"/><path d="M18 5h4v2a4 4 0 0 1-4 4"/><path d="M12 15v2"/><path d="M10 17h4"/><path d="M8 21h8"/></svg>
+                </div>
                 <h3>Sistema para Têmpera</h3>
                 <p class="award-story-source">Prêmio José Alves</p>
                 <p class="award-story-desc">Excelência para indústrias com foco em rastreabilidade e padronização operacional.</p>
             </article>
 
             <article class="award-story card-three source-jdv reveal">
+                <div class="award-story-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v7a6 6 0 0 1-12 0V2Z"/><path d="M6 5H2v2a4 4 0 0 0 4 4"/><path d="M18 5h4v2a4 4 0 0 1-4 4"/><path d="M12 15v2"/><path d="M10 17h4"/><path d="M8 21h8"/></svg>
+                </div>
                 <h3>Feito Vidreiro</h3>
                 <p class="award-story-source">Jornal do Vidro</p>
                 <p class="award-story-desc">Destaque pela inovação contínua e contribuição técnica ao setor.</p>
@@ -2221,6 +2548,19 @@
                 <h3>Reconhecimento consistente ao longo dos anos</h3>
                 <p class="award-story-desc">Do varejo à indústria, a ECG mantém histórico sólido de premiações em diferentes categorias, reforçando confiança, especialização e resultado prático no dia a dia das empresas.</p>
             </article>
+        </div>
+
+        <!-- CTA integrada à seção, sem quebra de cor -->
+        <div class="quick-test-shell reveal" style="margin-top:32px;">
+            <div class="quick-test-copy">
+                <span class="quick-test-kicker">Quero testar</span>
+                <h3 id="quick-test-title" class="quick-test-title">Veja o ECG funcionando no seu negócio em poucos minutos</h3>
+                <p class="quick-test-text">Ative agora seu período de teste grátis e descubra na prática como o sistema organiza orçamento, produção, financeiro e operação diária.</p>
+            </div>
+            <div class="quick-test-actions">
+                <a href="#teste-gratis" class="btn-primary">Quero testar agora</a>
+                <a href="https://wa.me/5548988019000?text=Olá!%20Quero%20fazer%20um%20teste%20gratuito%20do%20sistema%20ECG." class="quick-test-secondary" target="_blank" rel="noopener">Falar com especialista</a>
+            </div>
         </div>
     </div>
 </section>
@@ -2283,23 +2623,6 @@
                     <blockquote>"É o melhor sistema. A gente usa no escritório, na rua, em qualquer lugar. Muito fácil de mexer."</blockquote>
                     <div class="testimonial-author"><img src="./assets/logos/all_pro.png" alt="All Pro" class="testimonial-avatar" style="background:none; object-fit:cover;" /><div><div class="testimonial-author-name">All Pro</div><div class="testimonial-author-company">Vidraçaria e Serralheria</div></div></div>
                 </article>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- QUICK TEST -->
-<section class="quick-test" aria-labelledby="quick-test-title">
-    <div class="container">
-        <div class="quick-test-shell reveal">
-            <div class="quick-test-copy">
-                <span class="quick-test-kicker">Quero testar</span>
-                <h3 id="quick-test-title" class="quick-test-title">Veja o ECG funcionando no seu negócio em poucos minutos</h3>
-                <p class="quick-test-text">Ative agora seu período de teste grátis e descubra na prática como o sistema organiza orçamento, produção, financeiro e operação diária.</p>
-            </div>
-            <div class="quick-test-actions">
-                <a href="#teste-gratis" class="btn-primary">Quero testar agora</a>
-                <a href="https://wa.me/5548988019000?text=Olá!%20Quero%20fazer%20um%20teste%20gratuito%20do%20sistema%20ECG." class="quick-test-secondary" target="_blank" rel="noopener">Falar com especialista</a>
             </div>
         </div>
     </div>
@@ -2430,6 +2753,13 @@
     </div>
 </footer>
 
+<!-- SCROLL TO TOP -->
+<button class="scroll-top-btn" id="scrollTopBtn" aria-label="Voltar ao topo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+</button>
+
 <!-- WHATSAPP FLOAT -->
 <a href="https://wa.me/5548988019000?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20os%20sistemas%20ECG." class="whatsapp-float" target="_blank" rel="noopener" aria-label="Conversar pelo WhatsApp">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -2442,7 +2772,12 @@
 <script>
 // Header scroll
 const header = document.getElementById('header');
-window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 50));
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 50);
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+});
+scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 // Troca de modelo 3D via query string:
 // ausente -> modelo_ecg_vidro.glb (busto de vidro, padrão)
@@ -2531,14 +2866,37 @@ window.addEventListener('resize', () => {
 
 // Product tab switching
 function switchProduct(product) {
-    // Feedback visual na tab imediatamente
     document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active-glass', 'active-temper'));
     document.querySelector(`.product-tab[data-tab="${product}"]`)
         .classList.add(product === 'glass' ? 'active-glass' : 'active-temper');
 
-    const anim     = window._productAnim;
-    if (!anim || !anim.switchTo) return;
-    anim.switchTo(product);
+    const stage = document.getElementById('products-stage');
+    const cur   = stage.querySelector('.product-panel.active');
+    const nxt   = document.getElementById('panel-' + product);
+    if (!cur || cur === nxt) return;
+
+    // Lock current height before fading so the section doesn't jump
+    stage.style.height = stage.offsetHeight + 'px';
+
+    stage.classList.add('fading');
+    setTimeout(() => {
+        cur.classList.remove('active');
+        nxt.classList.add('active');
+        stage.classList.remove('fading');
+
+        // Measure the new panel's natural height and animate to it
+        const targetH = nxt.offsetHeight;
+        if (window.gsap) {
+            gsap.to(stage, {
+                height: targetH,
+                duration: 0.42,
+                ease: 'power2.inOut',
+                onComplete() { stage.style.height = ''; }
+            });
+        } else {
+            stage.style.height = '';
+        }
+    }, 220);
 }
 
 // FAQ toggle
@@ -2986,20 +3344,30 @@ function showNationalStats() {
     activeStateCode = null;
 }
 
-document.getElementById('stateIndicatorReset')?.addEventListener('click', showNationalStats);
-
-// ── Map interactions (hover = desktop, touch = mobile) ──────────────────────
+// ── Map interactions (hover preview + click-to-lock on desktop; tap on mobile) ─
 
 function bindMapInteractions(svg) {
-    // Browsers on touch devices fire simulated mouseenter ~300ms after touchstart.
-    // We track the last touch timestamp to ignore those ghost events.
     let lastTouchTime = 0;
+    let lockedStateCode = null; // desktop: click-locked state persists through scroll
+
+    function clearLock() {
+        if (lockedStateCode) {
+            svg.querySelector(`path[data-state="${lockedStateCode}"]`)?.classList.remove('is-locked');
+            lockedStateCode = null;
+        }
+    }
+
+    // Nacional button clears both lock and active selection
+    document.getElementById('stateIndicatorReset')?.addEventListener('click', () => {
+        clearLock();
+        showNationalStats();
+    });
 
     svg.querySelectorAll('path.state').forEach(path => {
 
-        // ── DESKTOP: hover ───────────────────────────────────────────────────
+        // ── DESKTOP: hover previews stats ────────────────────────────────────
         path.addEventListener('mouseenter', event => {
-            if (Date.now() - lastTouchTime < 600) return; // skip ghost mouse events on mobile
+            if (Date.now() - lastTouchTime < 600) return;
             if (!path.classList.contains('has-client')) return;
             const code = path.dataset.state;
             const clients = Number(path.dataset.clients || 0);
@@ -3012,7 +3380,8 @@ function bindMapInteractions(svg) {
                 positionMapTooltip(event);
                 mapTooltip.classList.add('visible');
             }
-            showStateStats(code);
+            // Only update stats if nothing is currently locked
+            if (!lockedStateCode) showStateStats(code);
         });
 
         path.addEventListener('mousemove', event => {
@@ -3025,33 +3394,60 @@ function bindMapInteractions(svg) {
             if (Date.now() - lastTouchTime < 600) return;
             path.classList.remove('is-hovered');
             hideMapTooltip();
-            showNationalStats();
+            // Only reset if no state is locked — locked state persists while user scrolls
+            if (!lockedStateCode) showNationalStats();
         });
 
-        // ── MOBILE: tap ──────────────────────────────────────────────────────
+        // ── DESKTOP: click locks/unlocks the state ────────────────────────────
+        path.addEventListener('click', () => {
+            if (Date.now() - lastTouchTime < 600) return;
+            if (!path.classList.contains('has-client')) return;
+            const code = path.dataset.state;
+            const clients = Number(path.dataset.clients || 0);
+            if (clients <= 0) return;
+
+            if (lockedStateCode === code) {
+                path.classList.remove('is-locked');
+                lockedStateCode = null;
+                activeStateCode = null;
+                showNationalStats();
+            } else {
+                clearLock();
+                lockedStateCode = code;
+                activeStateCode = code;
+                path.classList.add('is-locked');
+                showStateStats(code);
+            }
+        });
+
+        // ── MOBILE: tap selects state, auto-scrolls stats into view ──────────
         path.addEventListener('touchstart', e => {
             if (!path.classList.contains('has-client')) return;
             lastTouchTime = Date.now();
-            e.stopPropagation(); // prevent document listener from resetting stats
+            e.stopPropagation();
             const code = path.dataset.state;
-            // Deselect previous state if different
             if (activeStateCode && activeStateCode !== code) {
                 svg.querySelector(`path[data-state="${activeStateCode}"]`)?.classList.remove('is-selected');
             }
-            if (activeStateCode === code) return; // already showing this state
+            if (activeStateCode === code) return;
             path.classList.add('is-selected');
             activeStateCode = code;
             showStateStats(code);
+            // Scroll stats into view so user doesn't have to hunt for them
+            setTimeout(() => {
+                document.getElementById('coverageStats')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 220);
         }, { passive: true });
     });
 
-    // Tap outside any state → reset to national (mobile).
-    // Distingue toque simples de scroll: só reseta se não houve movimento.
+    // Tap outside a state on mobile resets selection (only if no scroll occurred)
     let docTouchMoved = false;
     document.addEventListener('touchstart', () => { docTouchMoved = false; }, { passive: true });
     document.addEventListener('touchmove',  () => { docTouchMoved = true;  }, { passive: true });
-    document.addEventListener('touchend', () => {
-        if (!docTouchMoved && activeStateCode !== null) showNationalStats();
+    document.addEventListener('touchend', e => {
+        if (!docTouchMoved && activeStateCode !== null && !e.target.closest('path.state')) {
+            showNationalStats();
+        }
     }, { passive: true });
 }
 
@@ -3115,180 +3511,21 @@ updateCoverageMap({
 });
 initCoverageMap();
 
-// ─── Glass Cards Animation ────────────────────────────────────────
+
+// ─── Glass panes infinite scroll ─────────────────────────────────
 (function () {
-    let isProductsInFocus = false;
-    let activePanel = null;
-    let isSwitching = false;
-    const ANIM_MS = 460;
-    const SWAP_BLUR_MS = 80;
-
-    function getCards(panel) {
-        return panel ? [...panel.querySelectorAll('.feature-card')] : [];
-    }
-
-    function setStackTargets(panel) {
-        const cards = getCards(panel);
-        const grid = panel?.querySelector('.features-grid');
-        if (!cards.length || !grid) return;
-        const vw = window.innerWidth;
-        const stackXStep = vw <= 480 ? 5 : (vw <= 768 ? 6.5 : 9);
-        const stackYStep = vw <= 480 ? 1.1 : (vw <= 768 ? 1.5 : 2);
-        const centerXShift = vw <= 480 ? 14 : (vw <= 768 ? 24 : 54);
-        const zDepthStep = vw <= 480 ? 2.1 : (vw <= 768 ? 2.6 : 3.2);
-
-        const gridRect = grid.getBoundingClientRect();
-        const anchorX = gridRect.width * 0.5;
-        const anchorY = gridRect.height * 0.5;
-        const n = cards.length;
-        const mid = (n - 1) / 2;
-
-        cards.forEach((card, i) => {
-            const r = card.getBoundingClientRect();
-            const cardCx = (r.left - gridRect.left) + r.width / 2;
-            const cardCy = (r.top - gridRect.top) + r.height / 2;
-            const centeredX = (i - mid) * stackXStep;
-            const centeredY = (i - mid) * stackYStep;
-
-            card.style.setProperty('--stack-x', `${(anchorX - cardCx) + centeredX + centerXShift}px`);
-            card.style.setProperty('--stack-y', `${(anchorY - cardCy) + centeredY}px`);
-            card.style.setProperty('--stack-z', `${n - i}`);
-            card.style.setProperty('--stack-zp', `${i * zDepthStep}px`);
-            card.style.setProperty('--stack-rz', `${(i - mid) * 0.5}deg`);
-            card.style.transitionDelay = `${i * 36}ms`;
-        });
-    }
-
-    function stackCards(panel) {
-        if (!panel) return;
-        activePanel = panel;
-        setStackTargets(panel);
-        getCards(panel).forEach(card => card.style.setProperty('--stack-blur', '0px'));
-        panel.classList.remove('is-open');
-        panel.classList.add('is-stacked');
-    }
-
-    function spreadCards(panel) {
-        if (!panel) return;
-        activePanel = panel;
-        setStackTargets(panel);
-        getCards(panel).forEach(card => card.style.setProperty('--stack-blur', '0px'));
-        panel.classList.add('is-open');
-        panel.classList.remove('is-stacked');
-    }
-
-    function closeCards(panel, onComplete) {
-        if (!panel) { onComplete?.(); return; }
-        stackCards(panel);
-        window.setTimeout(() => onComplete?.(), ANIM_MS + 80);
-    }
-
-    function stabilizeStageHeight() {
-        const stage = document.getElementById('products-stage');
-        if (!stage) return;
-        const panels = [...stage.querySelectorAll('.product-panel')];
-        if (!panels.length) return;
-
-        let maxHeight = 0;
-        panels.forEach(panel => {
-            const h = panel.scrollHeight;
-            if (h > maxHeight) maxHeight = h;
-        });
-        if (maxHeight > 0) {
-            stage.style.minHeight = `${maxHeight}px`;
-            stage.style.setProperty('--products-stage-height', `${maxHeight}px`);
-        }
-    }
-
-    function updateFocusState() {
-        const section = document.getElementById('produtos');
-        if (!section) return;
-        const r = section.getBoundingClientRect();
-        const inFocus = r.top < window.innerHeight * 0.72 && r.bottom > window.innerHeight * 0.28;
-        if (inFocus === isProductsInFocus) return;
-        isProductsInFocus = inFocus;
-        if (!activePanel) activePanel = document.querySelector('.product-panel.active');
-        if (!activePanel) return;
-        if (isProductsInFocus) spreadCards(activePanel);
-        else stackCards(activePanel);
-    }
-
-    function initPanels() {
-        const panels = [...document.querySelectorAll('.product-panel')];
-        panels.forEach(panel => {
-            panel.classList.remove('is-open', 'is-stacked');
-            if (panel.classList.contains('active')) activePanel = panel;
-            else panel.classList.add('is-stacked');
-        });
-
-        if (!activePanel) activePanel = document.querySelector('.product-panel.active');
-        if (!activePanel) return;
-        stabilizeStageHeight();
-        stackCards(activePanel);
-        updateFocusState();
-    }
-
-    function switchTo(product) {
-        if (isSwitching) return;
-        const stage = document.getElementById('products-stage');
-        const nextPanel = document.getElementById(`panel-${product}`);
-        if (!nextPanel) return;
-        const current = activePanel || document.querySelector('.product-panel.active');
-        if (current && current.id === nextPanel.id) return;
-
-        isSwitching = true;
-        const openNext = () => {
-            if (current) {
-                current.classList.remove('active');
-                current.classList.add('is-stacked');
-            }
-            nextPanel.classList.add('active');
-            setStackTargets(nextPanel);
-            nextPanel.classList.remove('is-open');
-            nextPanel.classList.add('is-stacked');
-            activePanel = nextPanel;
-            if (isProductsInFocus) spreadCards(nextPanel);
-            window.setTimeout(() => {
-                if (stage) stage.classList.remove('is-morphing');
-                isSwitching = false;
-            }, ANIM_MS + 80);
-        };
-
-        if (!current) { openNext(); return; }
-
-        if (isProductsInFocus) {
-            if (stage) stage.classList.add('is-morphing');
-            getCards(current).forEach(card => card.style.setProperty('--stack-blur', '2.2px'));
-            closeCards(current, () => {
-                window.setTimeout(openNext, SWAP_BLUR_MS);
-            });
-        } else {
-            current.classList.remove('active');
-            openNext();
-        }
-    }
-
-    window.addEventListener('resize', () => {
-        if (!activePanel) activePanel = document.querySelector('.product-panel.active');
-        if (!activePanel) return;
-        stabilizeStageHeight();
-        if (isProductsInFocus) {
-            spreadCards(activePanel);
-        } else {
-            stackCards(activePanel);
-        }
+    if (!window.gsap) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const track = document.querySelector('.gpanes-track');
+    if (!track) return;
+    // setWidth = width of one complete set of panes (half the track)
+    const setW = track.scrollWidth / 2;
+    gsap.to(track, {
+        x: -setW,
+        duration: 42,
+        ease: 'none',
+        repeat: -1,
     });
-
-    window.addEventListener('scroll', updateFocusState, { passive: true });
-    window.addEventListener('load', initPanels);
-    requestAnimationFrame(() => requestAnimationFrame(initPanels));
-
-    window._productAnim = {
-        stackCards, closeCards, spreadCards,
-        isProductsInFocus: () => isProductsInFocus,
-        isSwitching: () => isSwitching,
-        switchTo
-    };
 }());
 
 // Smooth scroll
